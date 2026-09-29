@@ -1,0 +1,92 @@
+:root {
+  --bg: #0f1115;
+  --card: #171a21;
+  --accent: #4f7cff;
+  --accent-live: #e8493a;
+  --text: #f2f3f5;
+  --muted: #9aa0ac;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+h1 { margin: 0 0 4px; font-size: 26px; }
+.subtitle { margin: 0 0 28px; color: var(--muted); font-size: 14px; }
+
+.mic-btn {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.mic-btn:hover { transform: scale(1.05); }
+.mic-btn.recording { background: var(--accent-live); animation: pulse 1.4s infinite; }
+.mic-btn.busy { background: var(--muted); cursor: not-allowed; }
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(232,73,58,0.5); }
+  70% { box-shadow: 0 0 0 16px rgba(232,73,58,0); }
+  100% { box-shadow: 0 0 0 0 rgba(232,73,58,0); }
+}
+
+.status { margin-top: 14px; color: var(--muted); font-size: 14px; min-height: 20px; }
+
+.log {
+  margin-top: 24px;
+  text-align: left;
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 85%;
+}
+
+.bubble.user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.bubble.bot {
+  align-self: flex-start;
+  background: #232833;
+  border-bottom-left-radius: 4px;
+}

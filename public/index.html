@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minmini Voice - Appin Technology</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+    <h1>Minmini</h1>
+    <p class="subtitle">AI voice counselor · Appin Technology Coimbatore</p>
+
+    <button id="micBtn" class="mic-btn" aria-label="Start call">
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor">
+        <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Z"/>
+        <path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.93V20H9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-2v-2.07A7 7 0 0 0 19 11Z"/>
+      </svg>
+    </button>
+    <div id="status" class="status">Tap to talk</div>
+
+    <div id="log" class="log"></div>
+  </main>
+
+  <audio id="player" hidden></audio>
+  <script src="app.js"></script>
+</body>
+</html>
