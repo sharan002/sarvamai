@@ -103,6 +103,38 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
   }
 });
 
+// Standalone STT/TTS, reused by other services (e.g. wpchat-api's WhatsApp
+// voice-note handling) so they don't duplicate Sarvam/Cartesia client code
+// and so TTS_PROVIDER here is the single switch for every channel's voice output.
+app.post("/api/stt", upload.single("audio"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No audio file uploaded (field name: audio)" });
+    }
+
+    const { transcript, languageCode } = await transcribeAudio(req.file.buffer, req.file.originalname);
+    res.json({ transcript, languageCode });
+  } catch (err) {
+    console.error("stt error:", err.response?.data || err.message);
+    res.status(500).json({ error: "Speech-to-text failed." });
+  }
+});
+
+app.post("/api/tts", async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: "Missing 'text' in request body." });
+    }
+
+    const { buffer, mimeType } = await synthesizeSpeech(text);
+    res.json({ audioBase64: buffer.toString("base64"), audioMimeType: mimeType });
+  } catch (err) {
+    console.error("tts error:", err.response?.data || err.message);
+    res.status(500).json({ error: "Text-to-speech failed." });
+  }
+});
+
 app.post("/api/session/reset", (req, res) => {
   const { sessionId } = req.body;
   if (sessionId) sessions.delete(sessionId);

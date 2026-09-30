@@ -54,6 +54,18 @@ the browser) and an optional `sessionId`. Returns:
 `POST /api/session/reset` - `{ "sessionId": "..." }` clears a call's
 conversation history and detected course.
 
+`POST /api/stt` - multipart form with an `audio` file. Returns
+`{ "transcript": "...", "languageCode": "ta-IN" }`. Used internally by
+`/api/voice-chat`, and by `wpchat-api` to transcribe incoming WhatsApp voice
+notes.
+
+`POST /api/tts` - JSON `{ "text": "..." }`. Returns
+`{ "audioBase64": "...", "audioMimeType": "audio/mpeg" }`, synthesized with
+whichever provider `TTS_PROVIDER` in `.env` currently points at (`cartesia`
+or `sarvam`). Used internally by `/api/voice-chat`, and by `wpchat-api` to
+speak WhatsApp voice-note replies - so this one `.env` setting controls the
+TTS provider/billing for every channel.
+
 ## Notes / next steps
 
 - Conversation state is in-memory (per server process) - fine for a single
