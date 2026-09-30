@@ -1,7 +1,7 @@
 {
   "name": "sarvam-voice-bot",
   "version": "1.0.0",
-  "description": "Sarvam AI voice assistant for Appin Technology (Minmini) - reuses the WhatsApp bot's RAG knowledge base",
+  "description": "Sarvam AI voice assistant for Appin Technology (Minmini)",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

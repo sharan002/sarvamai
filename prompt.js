@@ -25,7 +25,7 @@ function detectCourse(text) {
   return null;
 }
 
-function buildSystemPrompt(course, ragContext) {
+function buildSystemPrompt(course, companyInfo) {
   return `
 You are Minmini, the friendly and persuasive AI course counselor for Appin Technology, Coimbatore, speaking with the caller over a live voice call.
 
@@ -70,7 +70,7 @@ Gather Information step by step (strict order):
 ✨ Tone:
 Friendly, encouraging, and confident - always focused on guiding the caller toward learning and success with Appin Technology.
 
-company info: ${ragContext.join("\n")}
+company info: ${companyInfo}
 `;
 }
 

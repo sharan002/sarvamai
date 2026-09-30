@@ -1,13 +1,15 @@
 # Minmini Voice - Sarvam AI voice bot for Appin Technology
 
-Voice version of the WhatsApp "Minmini" bot. Same persona, same RAG knowledge
-base (reads the `chunks` collection already populated by `wpchat-api`), same
-`gpt-4o-mini` brain - but the input/output is spoken, via Sarvam AI:
+Voice version of the WhatsApp "Minmini" bot. Same persona, same company info,
+but the input/output is spoken, and the whole stack runs on Sarvam AI:
 
 - **STT**: Sarvam Saaras (`saaras:v3`, Tamil, codemix mode - matches the
   dashboard's "Mixed - Tanglish" transcriber setting)
-- **LLM**: your existing RAG + `gpt-4o-mini` (not Sarvam's hosted LLM) so the
-  bot answers from the same knowledge base and prompt as the WhatsApp bot
+- **LLM**: Sarvam's own hosted model, `sarvam-105b-conversations` (the model
+  the dashboard recommends for voice agents) - tuned for natural
+  Tamil/Tanglish conversation. Company info is a plain string in
+  `companyInfo.js` sent straight into the system prompt - no embeddings, no
+  vector search, no database lookup.
 - **TTS**: Sarvam Bulbul (`bulbul:v2`, `anushka` by default)
 
 ## Setup
@@ -17,9 +19,9 @@ cd D:\Etherservices\sarvam
 npm install
 ```
 
-Open `.env` and set `SARVAM_API_KEY` (from https://dashboard.sarvam.ai). The
-`MONGO_URI` and `OPENAI_API_KEY` are already filled in - copied from
-`wpchat-api/.env` so this hits the exact same MongoDB knowledge base.
+Open `.env` and set `SARVAM_API_KEY` (from https://dashboard.sarvam.ai), then
+paste your company info (courses, fees, trainers, placements, etc.) into the
+`COMPANY_INFO` string in `companyInfo.js`.
 
 ```powershell
 npm start

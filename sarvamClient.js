@@ -55,4 +55,29 @@ async function synthesizeSpeech(text) {
   return Buffer.from(base64Audio, "base64");
 }
 
-module.exports = { transcribeAudio, synthesizeSpeech };
+// Chat reply via Sarvam's own LLM - sarvam-105b-conversations, the model the
+// dashboard recommends for voice agents. OpenAI-compatible chat/completions
+// shape, so `messages` is the same [{ role, content }, ...] array as before.
+async function generateChatReply(messages) {
+  const res = await axios.post(
+    "https://api.sarvam.ai/v1/chat/completions",
+    {
+      model: process.env.SARVAM_CHAT_MODEL || "sarvam-105b-conversations",
+      messages,
+      // Reasoning is on by default on this endpoint; turn it off so replies
+      // come back fast and without hidden "thinking" text leaking into what
+      // gets read aloud.
+      reasoning_effort: null,
+    },
+    {
+      headers: {
+        "api-subscription-key": SARVAM_API_KEY,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return res.data.choices[0].message.content;
+}
+
+module.exports = { transcribeAudio, synthesizeSpeech, generateChatReply };

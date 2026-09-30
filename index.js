@@ -2,19 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const mongoose = require("mongoose");
 const crypto = require("crypto");
-const OpenAI = require("openai");
 const path = require("path");
-const dns = require("dns");
 
-// Same workaround as wpchat-api: some networks/sandboxes can't resolve the
-// MongoDB Atlas SRV record via the default resolver.
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
-
-const { gatherCourseRagContext } = require("./rag");
+const { COMPANY_INFO } = require("./companyInfo");
 const { detectCourse, buildSystemPrompt } = require("./prompt");
-const { transcribeAudio } = require("./sarvamClient");
+const { transcribeAudio, generateChatReply } = require("./sarvamClient");
 const { synthesizeSpeech } = require("./ttsClient");
 
 const app = express();
@@ -24,13 +17,6 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Connected to MongoDB (shared with wpchat-api)"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // In-memory per-call session state: conversation history + detected course.
 // Good enough for a single-instance voice widget; swap for Mongo/Redis if
@@ -69,20 +55,13 @@ app.post("/api/voice-chat", upload.single("audio"), async (req, res) => {
       if (detected) session.course = detected;
     }
 
-    const ragContext = await gatherCourseRagContext(transcript, session.course, 4);
-
     const messages = [
-      { role: "system", content: buildSystemPrompt(session.course, ragContext) },
+      { role: "system", content: buildSystemPrompt(session.course, COMPANY_INFO) },
       ...session.history.slice(-9),
       { role: "user", content: transcript },
     ];
 
-    const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_CHAT_MODEL || "gpt-4o-mini",
-      messages,
-    });
-
-    const reply = completion.choices[0].message.content;
+    const reply = await generateChatReply(messages);
 
     session.history.push({ role: "user", content: transcript });
     session.history.push({ role: "assistant", content: reply });
