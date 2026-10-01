@@ -12,7 +12,7 @@ const { synthesizeSpeech } = require("./ttsClient");
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 7000;
 
 app.use(cors());
 app.use(express.json());
@@ -96,6 +96,26 @@ app.post("/api/stt", upload.single("audio"), async (req, res) => {
   } catch (err) {
     console.error("stt error:", err.response?.data || err.message);
     res.status(500).json({ error: "Speech-to-text failed." });
+  }
+});
+
+// Generic Sarvam chat-completion proxy (sarvam-105b-conversations). Reused
+// by wpchat-api so its WhatsApp voice-note replies run on Sarvam's own LLM
+// without duplicating the Sarvam client code there. Caller builds the full
+// `messages` array (system prompt + history + latest turn), same shape as
+// /api/voice-chat uses internally.
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { messages } = req.body;
+    if (!Array.isArray(messages) || !messages.length) {
+      return res.status(400).json({ error: "Missing 'messages' array in request body." });
+    }
+
+    const reply = await generateChatReply(messages);
+    res.json({ reply });
+  } catch (err) {
+    console.error("chat error:", err.response?.data || err.message);
+    res.status(500).json({ error: "Chat completion failed." });
   }
 });
 
